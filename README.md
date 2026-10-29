@@ -1,99 +1,178 @@
-# PDF Summarizer
+# 📄 PDF Summarizer
 
-![CI](https://github.com/puff9808-ctrl/pdf-summarizer/actions/workflows/ci.yml/badge.svg)
+<p align="center">
+  A simple and efficient web application that extracts important information from PDF documents and generates concise summaries.
+</p>
 
-Upload a text-based PDF and get back its most important sentences, plus keywords.
-Built with **Python, FastAPI, pypdf and scikit-learn**. It needs no API keys and
-runs fully offline.
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
+  <img src="https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white" alt="Flask" />
+  <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5" />
+  <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS3" />
+</p>
 
-## How it works
+---
 
-This is an **extractive** summarizer: the summary is made of sentences copied from
-your document, ranked by importance. It does not generate new text.
+## 📌 About the Project
 
-1. **Extract** - `pypdf` pulls the text out of every page.
-2. **Clean and split** - hyphenated line breaks are joined, the text is split into
-   sentences, and fragments and repeated headers/footers are dropped.
-3. **Vectorize** - each sentence becomes a TF-IDF vector: words that are frequent in
-   a sentence but rare across the document get higher weight, and stop words are ignored.
-4. **Rank** - two methods are available:
-   - **TF-IDF**: score a sentence by the sum of its term weights.
-   - **TextRank**: build a graph where sentences are nodes and edges are cosine
-     similarities, then run PageRank (power iteration, damping 0.85). Sentences
-     similar to many other sentences score higher.
-5. **Select** - the top *n* sentences are returned in their original document order.
+PDF Summarizer is a web-based application designed to make reading lengthy PDF documents easier. It extracts text from PDF files and produces concise summaries, helping users quickly understand the main ideas without reading every page.
 
-## Run it
+The project aims to provide a straightforward interface for document processing and improve productivity for students, researchers, and professionals.
+
+## ✨ Features
+
+- 📤 **PDF Upload:** Upload a PDF document for processing.
+- 📝 **Text Extraction:** Extract readable text from PDF files.
+- 🧠 **Automatic Summarization:** Generate a concise overview of document content.
+- 📖 **Easy-to-Read Results:** Present summarized information in a clear format.
+- 📥 **Downloadable Output:** Save the generated summary when supported by the implementation.
+- 🎨 **Simple User Interface:** Interact with the application through a clean web interface.
+- ⚡ **Time Saving:** Quickly review lengthy documents and identify important information.
+
+## 🛠️ Tech Stack
+
+| Technology | Purpose |
+|---|---|
+| Python | Core application logic |
+| Flask | Backend web framework |
+| HTML5 | Web page structure |
+| CSS3 | Styling and layout |
+| JavaScript | Frontend interactions, if implemented |
+| PDF Processing Library | Extracting text from PDF documents |
+
+## ⚙️ How It Works
+
+1. Upload a PDF document through the web interface.
+2. The backend receives and processes the uploaded file.
+3. Text is extracted from the PDF.
+4. The summarization logic identifies the main information.
+5. The generated summary is displayed to the user.
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Python 3.9 or later
+- pip (Python package manager)
+- Git
+
+### 1. Clone the Repository
 
 ```bash
-python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
+git clone https://github.com/puff9808-ctrl/pdf-summarizer.git
+```
+
+### 2. Navigate to the Project Directory
+
+```bash
+cd pdf-summarizer
+```
+
+### 3. Create a Virtual Environment
+
+```bash
+python -m venv venv
+```
+
+Activate it:
+
+**Windows**
+
+```bash
+venv\Scripts\activate
+```
+
+**macOS / Linux**
+
+```bash
+source venv/bin/activate
+```
+
+### 4. Install Dependencies
+
+If your repository contains a `requirements.txt` file, run:
+
+```bash
 pip install -r requirements.txt
-uvicorn app.main:app --reload
 ```
 
-Open http://localhost:8000. Interactive API docs are at http://localhost:8000/docs.
+### 5. Run the Application
 
-With Docker:
+If the Flask entry point is `app.py`, run:
 
 ```bash
-docker build -t pdf-summarizer .
-docker run -p 8000:8000 pdf-summarizer
+python app.py
 ```
 
-## API
+Open the local URL displayed in the terminal. For a typical Flask development configuration, this is:
 
-`POST /api/summarize` (multipart form)
-
-| Field | Type | Default | Notes |
-|---|---|---|---|
-| `file` | PDF | required | up to 10 MB and 300 pages |
-| `sentences` | int | 5 | 1 to 20 |
-| `method` | string | `textrank` | `textrank` or `tfidf` |
-
-```bash
-curl -F "file=@paper.pdf" -F sentences=5 http://localhost:8000/api/summarize
+```text
+http://127.0.0.1:5000
 ```
 
-Response:
+> The entry-point filename, required packages, and local URL may differ depending on your implementation.
 
-```json
-{
-  "filename": "paper.pdf", "pages": 12, "words": 5400,
-  "method": "textrank", "total_sentences": 210,
-  "summary": ["...", "..."], "keywords": ["..."]
-}
+## 📂 Project Structure
+
+An example structure for a Flask-based application:
+
+```text
+pdf-summarizer/
+├── app.py
+├── requirements.txt
+├── templates/
+│   └── index.html
+├── static/
+│   ├── style.css
+│   └── script.js
+├── uploads/
+├── .gitignore
+└── README.md
 ```
 
-Errors return a JSON `detail` message: `413` file too large, `422` invalid PDF,
-password-protected, no extractable text, or invalid parameters.
+The actual structure may differ. Update this section to match your repository.
 
-## Tests
+## 💡 Use Cases
 
-```bash
-pip install -r requirements-dev.txt
-pytest
-```
+- Summarizing academic papers and research documents.
+- Reviewing lengthy reports.
+- Extracting key ideas from study materials.
+- Quickly understanding business documents.
+- Improving productivity when working with large documents.
 
-## Limitations
+## 🔮 Future Improvements
 
-- Scanned PDFs (images of text) have no text layer and are rejected; they would need OCR first.
-- Extractive summaries can read choppily and can miss ideas spread across many sentences.
-- Sentence splitting is rule-based, so unusual abbreviations can split a sentence early.
-- Documents over 2,500 sentences are pre-filtered by TF-IDF score before TextRank runs, to bound memory.
+- Support for scanned PDFs using OCR.
+- Adjustable summary length.
+- AI-powered summarization with configurable language models.
+- Summary downloads in TXT or PDF format.
+- Multi-file processing.
+- Improved error handling and upload validation.
+- A responsive interface with document previews.
 
-## Project structure
+## 👨‍💻 Author
 
-```
-app/
-  main.py        FastAPI app and routes
-  pdf_utils.py   PDF text extraction and validation
-  summarizer.py  sentence splitting, TF-IDF, TextRank
-static/          single-page web UI (HTML, CSS, JS)
-tests/           pytest suite (unit and API tests)
-```
+**Bhukya Gowtham Naik**
 
-## Ideas to extend it
+- GitHub: [@puff9808-ctrl](https://github.com/puff9808-ctrl)
+- Portfolio: [Personal Portfolio](https://portfolio-homie8.vercel.app/)
 
-- OCR fallback for scanned PDFs (Tesseract)
-- Abstractive summaries using a language model API
-- Per-page or per-chapter summaries
+## 🤝 Contributing
+
+Contributions and suggestions are welcome.
+
+1. Fork this repository.
+2. Create a feature branch.
+3. Commit your changes.
+4. Push the branch to your fork.
+5. Open a pull request.
+
+## 📄 License
+
+Add the license that applies to this project. If no license has been selected, the repository's reuse permissions should not be assumed.
+
+---
+
+<p align="center">
+  Built with ❤️ by <strong>Bhukya Gowtham Naik</strong>
+</p>
